@@ -1,4 +1,4 @@
-package it.polito.tdp.lab04.DAO;
+;package it.polito.tdp.lab04.DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,6 +38,9 @@ public class CorsoDAO {
 
 				// Crea un nuovo JAVA Bean Corso
 				// Aggiungi il nuovo oggetto Corso alla lista corsi
+				
+				corsi.add(new Corso(codins, numeroCrediti, nome, periodoDidattico));
+				
 			}
 
 			conn.close();
@@ -46,8 +49,8 @@ public class CorsoDAO {
 			
 
 		} catch (SQLException e) {
-			// e.printStackTrace();
-			throw new RuntimeException("Errore Db", e);
+			 e.printStackTrace();
+			throw new RuntimeException("Errore CorsoDAO", e);
 		}
 	}
 	
@@ -64,6 +67,44 @@ public class CorsoDAO {
 	 */
 	public void getStudentiIscrittiAlCorso(Corso corso) {
 		// TODO
+	}
+	
+	public List<Corso> getCorsiByStudente(Integer studente)
+	{
+		final String sql = "SELECT c.codins, c.crediti, c.nome, c.pd  "
+				+ "FROM  corso c, iscrizione i "
+				+ "WHERE c.codins = i.codins AND i.matricola = ?";
+
+		List<Corso> corsi = new LinkedList<Corso>();
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, studente);
+			ResultSet rs = st.executeQuery();
+
+			while (rs.next()) {
+
+				String codins = rs.getString("codins");
+				int numeroCrediti = rs.getInt("crediti");
+				String nome = rs.getString("nome");
+				int periodoDidattico = rs.getInt("pd");
+
+				System.out.println(codins + " " + numeroCrediti + " " + nome + " " + periodoDidattico);
+
+				corsi.add(new Corso(codins, numeroCrediti, nome, periodoDidattico));
+				
+			}
+
+			conn.close();
+			
+			return corsi;
+			
+
+		} catch (SQLException e) {
+			 e.printStackTrace();
+			throw new RuntimeException("Errore CorsoDAO2", e);
+		}
 	}
 
 	/*
